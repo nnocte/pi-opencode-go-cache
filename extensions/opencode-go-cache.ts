@@ -64,9 +64,19 @@ function clampPromptCacheKey(key: string | undefined): string | undefined {
     return Array.from(key).slice(0, MAX_PROMPT_CACHE_KEY_LEN).join("");
 }
 
-function isOpencodeGoModel(model: { provider?: string; baseUrl?: string } | undefined): boolean {
+/**
+ * Models that do NOT support cache_control / prompt_cache_retention fields.
+ * The OpenCode Go gateway accepts these fields for most models, but some
+ * (e.g. GLM-5.2) reject them with a 400 validation error.
+ */
+const CACHE_CONTROL_BLACKLIST = new Set([
+    "glm-5.2",
+]);
+
+function isOpencodeGoModel(model: { provider?: string; baseUrl?: string; id?: string } | undefined): boolean {
     if (!model) return false;
     if (model.provider !== PROVIDER_ID) return false;
+    if (model.id && CACHE_CONTROL_BLACKLIST.has(model.id)) return false;
     return true;
 }
 
