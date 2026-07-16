@@ -1,6 +1,6 @@
 {
   "name": "pi-opencode-go-cache",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Prompt caching for Pi's OpenCode Go provider (kimi, deepseek, mimo, qwen, minimax). Stamps prompt_cache_key, 24h retention, and cache_control breakpoints on every request — beyond what pi-ai or opencode CLI do by default.",
   "keywords": [
     "pi-package",
@@ -31,7 +31,12 @@
     "url": "https://github.com/nnocte/pi-opencode-go-cache/issues"
   },
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*",
-    "@earendil-works/pi-ai": "*"
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0",
+    "typescript-eslint": "^8.64.0"
   }
 }
