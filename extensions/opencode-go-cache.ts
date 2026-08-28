@@ -75,15 +75,21 @@ function isOpencodeGoModel(model: { provider?: string; baseUrl?: string } | unde
 /**
  * Models for which the OpenCode Go gateway does NOT strip Anthropic-style
  * cache_control markers, and the downstream API rejects them outright.
- * For these, we must skip all cache stamping or every request errors with
- * "Extra inputs are not permitted, field: ...cache_control".
+ * For these, we must skip all cache stamping or every request fails. The
+ * gateway reports it two ways:
+ *   • "Extra inputs are not permitted, field: ...cache_control"  (glm)
+ *   • "The parameter cache_control is not supported for model
+ *      moonshotai/kimi-k3"                                       (kimi-k3)
  *
  * Substring match against the model id (e.g. "opencode-go/glm-5.2" or
  * "opencode-go/zhipu-glm"). Add other models here as they're discovered.
+ * Keep each pattern as narrow as the breakage: kimi-k2.7 accepts
+ * cache_control, so this matches "kimi-k3" and not "kimi".
  */
 const UNSUPPORTED_CACHE_MODEL_PATTERNS: readonly string[] = [
     "glm",
     "zhipu",
+    "kimi-k3",
 ];
 
 function isUnsupportedForCache(
