@@ -162,13 +162,16 @@ place, with nothing to configure.
 
 The OpenCode Go gateway is supposed to strip Anthropic-style
 `cache_control` markers for downstream APIs that don't speak Anthropic,
-but it doesn't do so for **GLM (Zhipu)** models. Stamping them makes GLM
-reject the request with `Extra inputs are not permitted, field:
-...cache_control`.
+but it doesn't do so for **GLM (Zhipu)** or **kimi-k3**. Stamping them
+makes the request fail:
 
-To avoid breaking those models, the extension detects GLM model ids
-(substring match on `glm` / `zhipu`) and skips all cache stamping for
-them — the request goes out unchanged, and the footer shows
+- GLM returns `Extra inputs are not permitted, field: ...cache_control`
+- kimi-k3 returns `The parameter cache_control is not supported for
+  model moonshotai/kimi-k3`
+
+To avoid breaking those models, the extension matches their model ids
+(substring match on `glm`, `zhipu` and `kimi-k3`) and skips all cache
+stamping for them — the request goes out unchanged, and the footer shows
 `opencode-go-cache: unsupported` so it's obvious why caching is off. If
 other models turn out to have the same problem, add them to
 `UNSUPPORTED_CACHE_MODEL_PATTERNS` in
@@ -200,7 +203,8 @@ the anthropic-messages path).
 Results — the 11 cacheable opencode-go models get
 `prompt_cache_key=set | retention=24h | cache_control markers=3–5` on
 the wire; the 2 GLM models (`glm-5.1`, `glm-5.2`) are detected and
-skipped so their requests go out unchanged. Captured payloads from the
+skipped so their requests go out unchanged. kimi-k3 arrived after that
+test run and is covered by the same skip path. Captured payloads from the
 test are reproducible — point either client at a proxy on
 `127.0.0.1:8420` with `opencode-go.baseUrl` overridden and you'll see
 the same fields.
